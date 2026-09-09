@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JBGAMES: Adivina el Número</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #fefce8;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .game-container {
+            background: #fed7aa;
+            border-radius: 24px;
+            padding: 35px 30px;
+            width: 100%;
+            max-width: 440px;
+            flex: 0 0 auto;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            color: #744210;
+        }
+
+        .logo {
+            margin-bottom: 6px;
+        }
+
+        .logo img {
+            max-width: 120px;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #744210;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #975a16;
+            margin-bottom: 26px;
+        }
+
+        .section {
+            background: rgba(254, 215, 170, 0.4);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .section h3 {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            color: #744210;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group label {
+            flex: 1;
+            text-align: left;
+        }
+
+        label span {
+            display: block;
+            font-size: 12px;
+            color: #975a16;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 11px 12px;
+            border-radius: 9px;
+            border: 2px solid rgba(237, 100, 166, 0.25);
+            background: #fffbeb;
+            color: #744210;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus {
+            border-color: #ed64a6;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 11px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.1s, filter 0.2s;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            filter: brightness(1.15);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: none;
+        }
+
+        .btn-primary {
+            background: #ed64a6;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        .btn-secondary {
+            background: rgba(237, 100, 166, 0.15);
+            color: #ed64a6;
+            border: 1px solid rgba(237, 100, 166, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-danger {
+            background: #4fd1c5;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .guess-input {
+            margin-bottom: 14px;
+        }
+
+        .feedback {
+            font-size: 17px;
+            min-height: 24px;
+            margin: 14px 0;
+            font-weight: 700;
+        }
+
+        .feedback.mayor { color: #dd6b20; }
+        .feedback.menor { color: #ed64a6; }
+        .feedback.win   { color: #38a169; }
+        .feedback.lose  { color: #e53e3e; }
+
+        .attempts {
+            width: 100%;
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(254, 215, 170, 0.5);
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .dot.used   { background: #e53e3e; border-color: #e53e3e; }
+        .dot.active { background: #ed64a6; border-color: #fff; }
+        .dot.won    { background: #38a169; border-color: #38a169; }
+
+        .credits-side {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 16px;
+            flex: 1 1 0;
+            min-width: 140px;
+            max-width: 220px;
+        }
+
+        .credits-card {
+            background: #fed7aa;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 20px;
+            padding: 22px 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .credits-badge {
+            display: inline-block;
+            background: #ed64a6;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .credits-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #744210;
+            margin-bottom: 4px;
+        }
+
+        .credits-career {
+            font-size: 13px;
+            color: #975a16;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .credits-divider {
+            width: 50px;
+            height: 2px;
+            background: #ed64a6;
+            margin: 12px auto;
+            border-radius: 2px;
+        }
+
+        .credits-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            color: #744210;
+        }
+
+        .credits-info div {
+            line-height: 1.5;
+        }
+
+        .credits-info .label {
+            color: #975a16;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .credits-info .value {
+            color: #5a3e10;
+            font-weight: 600;
+        }
+
+        #fireworksCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .celebration-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 25;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .celebration-overlay.show {
+            opacity: 1;
+        }
+
+        .celebration-text {
+            font-size: 50px;
+            font-weight: 900;
+            text-align: center;
+            color: #ed64a6;
+            text-shadow: 0 2px 10px rgba(237, 100, 166, 0.3);
+            line-height: 1.2;
+        }
+
+        .celebration-sub {
+            font-size: 28px;
+            color: #744210;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 760px) {
+            .content-wrapper {
+                flex-direction: column;
+                align-items: center;
+                gap: 16px;
+            }
+            .credits-side {
+                max-width: 440px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fireworksCanvas"></canvas>
+
+    <div class="celebration-overlay" id="celebrationOverlay">
+        <div class="celebration-text">FELICITACIONES</div>
+        <div class="celebration-sub">¡ADIVINASTE EL NÚMERO!</div>
+    </div>
+
+    <div class="content-wrapper">
+
+    <div class="credits-side">
+        <div class="credits-card">
+            <span class="credits-badge">Alumnos de 1er Año</span>
+            <h2 class="credits-title">DESARROLLO DE SOFTWARE</h2>
+            <p class="credits-career">IESA — Extension Santa Ana</p>
+            <div class="credits-divider"></div>
+            <div class="credits-info">
+                <div>
+                    <div class="label">Materia</div>
+                    <div class="value">Programación I</div>
+                </div>
+                <div>
+                    <div class="label">Profesor</div>
+                    <div class="value">Cristian Collante</div>
+                </div>
+                <div>
+                    <div class="label">Participantes</div>
+                    <div class="value">Diaz Belén A., Toledo Ana Candela, Barros Lucia, Ibarra Jose M., Carabajal Hugo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-container" id="gameContainer">
+        <div class="logo">
+            <img src="logo.jpg" alt="JBGAMES Logo">
+        </div>
+        <h1>Adivina el Número</h1>
+        <p class="subtitle">El número secreto está entre tú y la victoria</p>
+
+        <!-- Configuración -->
+        <div id="configSection" class="section">
+            <h3>Configuración</h3>
+            <div class="input-group">
+                <label>
+                    <span>Límite inferior</span>
+                    <input type="number" id="limiteInferior" value="1">
+                </label>
+                <label>
+                    <span>Límite superior</span>
+                    <input type="number" id="limiteSuperior" value="100">
+                </label>
+            </div>
+            <div class="input-group" style="margin-top: 12px;">
+                <label>
+                    <span>Intentos máximos</span>
+                    <input type="number" id="intentosMaximos" value="10">
+                </label>
+            </div>
+            <button class="btn-primary" id="btnIniciar" onclick="iniciarJuego()">Iniciar Juego</button>
+            <button class="btn-danger" id="btnLimpiar" onclick="limpiarTodo()">Limpiar Contenido</button>
+        </div>
+
+        <!-- Juego -->
+        <div id="gameSection" class="section hidden">
+            <h3 id="rangoDisplay"></h3>
+            <div class="guess-input">
+                <input type="number" id="guessInput" placeholder="Ingresa tu número">
+            </div>
+            <button class="btn-primary" id="btnAdivinar" onclick="hacerIntento()">Adivinar</button>
+            <div class="feedback" id="feedback"></div>
+            <div class="attempts" id="attemptsDots"></div>
+            <button class="btn-danger" id="btnLimpiar2" onclick="limpiarTodo()">Limpiar Contenido</button>
+        </div>
+    </div>
+
+    <div class="credits-side">
+        <div class="credits-card">
+            <span class="credits-badge">Alumnos de 1er Año</span>
+            <h2 class="credits-title">DESARROLLO DE SOFTWARE</h2>
+            <p class="credits-career">IESA — Extension Santa Ana</p>
+            <div class="credits-divider"></div>
+            <div class="credits-info">
+                <div>
+                    <div class="label">Materia</div>
+                    <div class="value">Programación I</div>
+                </div>
+                <div>
+                    <div class="label">Profesor</div>
+                    <div class="value">Cristian Collante</div>
+                </div>
+                <div>
+                    <div class="label">Participantes</div>
+                    <div class="value">Diaz Belén A., Toledo Ana Candela, Barros Lucia, Ibarra Jose M., Carabajal Hugo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        let numeroSecreto = 0;
+        let intentosMaximos = 0;
+        let contador = 0;
+        let juegoTerminado = false;
+
+        const $ = (id) => document.getElementById(id);
+
+        document.getElementById('guessInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') hacerIntento();
+        });
+
+        function iniciarJuego() {
+            const inferior = parseInt($('limiteInferior').value);
+            const superior = parseInt($('limiteSuperior').value);
+            const max = parseInt($('intentosMaximos').value);
+
+            if (isNaN(inferior) || isNaN(superior) || isNaN(max)) {
+                mostrarFeedback('Ingresa valores válidos en la configuración.', 'lose');
+                return;
+            }
+            if (inferior >= superior) {
+                mostrarFeedback('El límite inferior debe ser menor que el superior.', 'lose');
+                return;
+            }
+            if (max <= 0) {
+                mostrarFeedback('Los intentos máximos deben ser mayores a 0.', 'lose');
+                return;
+            }
+
+            numeroSecreto = Math.floor(Math.random() * (superior - inferior + 1)) + inferior;
+            intentosMaximos = max;
+            contador = 0;
+            juegoTerminado = false;
+
+            $('configSection').classList.add('hidden');
+            $('gameSection').classList.remove('hidden');
+            $('rangoDisplay').textContent = 'Adivina entre ' + inferior + ' y ' + superior;
+            $('guessInput').value = '';
+            $('guessInput').focus();
+            pintarPuntos();
+            mostrarFeedback('¡El juego ha comenzado!', 'win');
+            document.title = 'JBGAMES — Intento 0/' + intentosMaximos;
+        }
+
+        function hacerIntento() {
+            if (juegoTerminado) return;
+
+            const guess = parseInt($('guessInput').value);
+            if (isNaN(guess)) {
+                mostrarFeedback('Ingresa un número válido.', 'lose');
+                return;
+            }
+
+            contador++;
+            if (contador > intentosMaximos) return;
+
+            const rangoMenor = parseInt($('limiteInferior').value);
+            const rangoMayor = parseInt($('limiteSuperior').value);
+
+            if (guess < rangoMenor || guess > rangoMayor) {
+                contador--;
+                pintarPuntos();
+                mostrarFeedback('El número debe estar entre ' + rangoMenor + ' y ' + rangoMayor + '.', 'lose');
+                return;
+            }
+
+            if (guess === numeroSecreto) {
+                juegoTerminado = true;
+                pintarPuntos(true);
+                mostrarFeedback('¡Felicidades! ¡Has adivinado el número secreto!', 'win');
+                document.title = 'JBGAMES — ¡Victoria!';
+                $('btnAdivinar').disabled = true;
+                celebrarVictoria();
+            } else {
+                pintarPuntos();
+                mostrarFeedback(
+                    guess < numeroSecreto ? 'El número secreto es MAYOR.' : 'El número secreto es MENOR.',
+                    guess < numeroSecreto ? 'mayor' : 'menor'
+                );
+                document.title = 'JBGAMES — Intento ' + contador + '/' + intentosMaximos;
+            }
+
+            $('guessInput').value = '';
+
+            if (contador >= intentosMaximos && guess !== numeroSecreto) {
+                juegoTerminado = true;
+                mostrarFeedback('¡Juego terminado! Has agotado tus intentos. El número era: ' + numeroSecreto, 'lose');
+                document.title = 'JBGAMES — Derrota';
+                $('btnAdivinar').disabled = true;
+            }
+        }
+
+        function pintarPuntos(ganado) {
+            const contenedor = $('attemptsDots');
+            contenedor.innerHTML = '';
+            for (let i = 0; i < intentosMaximos; i++) {
+                const dot = document.createElement('span');
+                dot.className = 'dot';
+                if (i < contador) dot.classList.add(ganado ? 'won' : 'used');
+                if (i === contador && !ganado && !juegoTerminado) dot.classList.add('active');
+                contenedor.appendChild(dot);
+            }
+        }
+
+        function mostrarFeedback(texto, tipo) {
+            const fb = $('feedback');
+            fb.textContent = texto;
+            fb.className = 'feedback ' + tipo;
+        }
+
+        function resetear() {
+            $('gameSection').classList.add('hidden');
+            $('configSection').classList.remove('hidden');
+            $('feedback').textContent = '';
+            $('btnAdivinar').disabled = false;
+            document.title = 'JBGAMES: Adivina el Número';
+        }
+
+        function limpiarTodo() {
+            resetear();
+            $('limiteInferior').value = '';
+            $('limiteSuperior').value = '';
+            $('intentosMaximos').value = '';
+            $('guessInput').value = '';
+            $('gameSection').classList.add('hidden');
+            $('configSection').classList.remove('hidden');
+            cancelarFuegos();
+        }
+
+        // === Fuegos Artificiales ===
+        const fwCanvas = $('fireworksCanvas');
+        const fwCtx = fwCanvas.getContext('2d');
+        let fireworks = [];
+        let fwRunning = false;
+        let fwRAF = null;
+
+        function resizeFwCanvas() {
+            fwCanvas.width = window.innerWidth;
+            fwCanvas.height = window.innerHeight;
+        }
+        resizeFwCanvas();
+        window.addEventListener('resize', resizeFwCanvas);
+
+        class Rocket {
+            constructor() {
+                this.x = Math.random() * fwCanvas.width;
+                this.y = fwCanvas.height;
+                this.targetY = Math.random() * fwCanvas.height * 0.4 + 50;
+                this.speedY = -(Math.random() * 3 + 6);
+                this.hue = Math.random() * 40 + 330;
+                this.trail = [];
+            }
+            update() {
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > 6) this.trail.shift();
+                this.y += this.speedY;
+                this.speedY += 0.1;
+                return this.y <= this.targetY;
+            }
+            draw() {
+                this.trail.forEach((p, i) => {
+                    fwCtx.beginPath();
+                    fwCtx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                    fwCtx.fillStyle = `hsla(${this.hue}, 100%, 70%, ${(i + 1) / this.trail.length * 0.5})`;
+                    fwCtx.fill();
+                });
+                fwCtx.beginPath();
+                fwCtx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                fwCtx.fillStyle = '#fff';
+                fwCtx.fill();
+            }
+        }
+
+        class FwParticle {
+            constructor(x, y, hue) {
+                this.x = x;
+                this.y = y;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 2;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.gravity = 0.06;
+                this.life = 1;
+                this.decay = Math.random() * 0.015 + 0.008;
+                this.hue = hue + Math.random() * 40 - 20;
+            }
+            update() {
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+                this.life -= this.decay;
+            }
+            draw() {
+                fwCtx.beginPath();
+                fwCtx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                fwCtx.fillStyle = `hsla(${this.hue}, 100%, 65%, ${Math.max(this.life, 0)})`;
+                fwCtx.fill();
+            }
+        }
+
+        function explode(x, y, hue) {
+            const count = 50 + Math.floor(Math.random() * 20);
+            for (let i = 0; i < count; i++) {
+                fireworks.push(new FwParticle(x, y, hue));
+            }
+        }
+
+        function launchRocket() {
+            fireworks.push(new Rocket());
+        }
+
+        function animateFireworks() {
+            fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                const f = fireworks[i];
+                if (f instanceof Rocket) {
+                    f.draw();
+                    if (f.update()) {
+                        explode(f.x, f.y, f.hue);
+                        fireworks.splice(i, 1);
+                    }
+                } else {
+                    f.update();
+                    f.draw();
+                    if (f.life <= 0) fireworks.splice(i, 1);
+                }
+            }
+            if (fwRunning) {
+                if (Math.random() < 0.1) launchRocket();
+                fwRAF = requestAnimationFrame(animateFireworks);
+            }
+        }
+
+        function celebrarVictoria() {
+            $('celebrationOverlay').classList.add('show');
+            fwRunning = true;
+            fireworks = [];
+            for (let i = 0; i < 4; i++) {
+                setTimeout(launchRocket, i * 300);
+            }
+            if (!fwRAF) animateFireworks();
+            setTimeout(() => {
+                fwRunning = false;
+                cancelAnimationFrame(fwRAF);
+                fwRAF = null;
+                $('celebrationOverlay').classList.remove('show');
+            }, 6000);
+        }
+
+        function cancelarFuegos() {
+            fwRunning = false;
+            if (fwRAF) {
+                cancelAnimationFrame(fwRAF);
+                fwRAF = null;
+            }
+            fireworks = [];
+            fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+            $('celebrationOverlay').classList.remove('show');
+        }
+    </script>
+
+</body>
+</html>
