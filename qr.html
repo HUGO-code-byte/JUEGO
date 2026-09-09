@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR - JBGAMES</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #fefce8;
+            padding: 20px;
+        }
+
+        .qr-container {
+            background: #fed7aa;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .logo {
+            margin-bottom: 10px;
+        }
+
+        .logo img {
+            max-width: 100px;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #744210;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #975a16;
+            margin-bottom: 24px;
+        }
+
+        .qr-badge {
+            display: inline-block;
+            background: #ed64a6;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .qr-img {
+            background: #fff;
+            padding: 16px;
+            border-radius: 16px;
+            display: inline-block;
+            margin-bottom: 20px;
+            border: 2px solid rgba(237, 100, 166, 0.2);
+        }
+
+        .qr-img img {
+            display: block;
+            width: 200px;
+            height: 200px;
+        }
+
+        .url-text {
+            font-size: 11px;
+            color: #975a16;
+            word-break: break-all;
+            background: rgba(254, 215, 170, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .instructions {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #744210;
+            line-height: 1.8;
+        }
+
+        .instructions strong {
+            color: #ed64a6;
+        }
+
+        .divider {
+            width: 50px;
+            height: 2px;
+            background: #ed64a6;
+            margin: 16px auto;
+            border-radius: 2px;
+        }
+
+        .credits {
+            margin-top: 16px;
+            font-size: 11px;
+            color: #975a16;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="qr-container">
+        <div class="logo">
+            <img src="logo.jpg" alt="JBGAMES Logo">
+        </div>
+        <h1>JBGAMES</h1>
+        <p class="subtitle">Adivina el Numero</p>
+
+        <span class="qr-badge">Escanea para Jugar</span>
+
+        <div class="qr-img">
+            <img id="qrCode" src="" alt="QR Code">
+        </div>
+
+        <div class="url-text" id="gameUrl"></div>
+
+        <div class="divider"></div>
+
+        <div class="instructions">
+            <strong>1.</strong> Apunta la camara al codigo QR<br>
+            <strong>2.</strong> Toca el enlace que aparece<br>
+            <strong>3.</strong> ¡Juega y adivina el numero!
+        </div>
+
+        <p class="credits">IESA — Extension Santa Ana | Programacion I</p>
+    </div>
+
+    <script>
+        const gameUrl = window.location.origin + '/index.html';
+        document.getElementById('gameUrl').textContent = gameUrl;
+        document.getElementById('qrCode').src =
+            'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(gameUrl);
+    </script>
+
+</body>
+</html>
