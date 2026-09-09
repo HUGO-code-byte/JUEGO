@@ -334,6 +334,55 @@
             margin-top: 10px;
         }
 
+        .qr-section {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .qr-card {
+            background: #fed7aa;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .qr-badge {
+            display: inline-block;
+            background: #ed64a6;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .qr-img {
+            background: #fff;
+            padding: 10px;
+            border-radius: 12px;
+            display: inline-block;
+            border: 2px solid rgba(237, 100, 166, 0.2);
+        }
+
+        .qr-img img {
+            display: block;
+            width: 120px;
+            height: 120px;
+        }
+
+        .qr-hint {
+            font-size: 11px;
+            color: #975a16;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
         @media (max-width: 760px) {
             .content-wrapper {
                 flex-direction: column;
@@ -446,7 +495,17 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
+
+    <div class="qr-section">
+        <div class="qr-card">
+            <span class="qr-badge">Compartir</span>
+            <div class="qr-img">
+                <img id="qrCode" src="" alt="QR Code">
+            </div>
+            <p class="qr-hint">Escanea para jugar</p>
+        </div>
+    </div>
 
     <script>
         let numeroSecreto = 0;
@@ -710,6 +769,11 @@
             fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
             $('celebrationOverlay').classList.remove('show');
         }
+
+        // QR Code
+        const gameUrl = window.location.origin + window.location.pathname;
+        document.getElementById('qrCode').src =
+            'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=' + encodeURIComponent(gameUrl);
     </script>
 
 </body>
